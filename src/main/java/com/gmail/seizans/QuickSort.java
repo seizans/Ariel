@@ -2,6 +2,7 @@ package com.gmail.seizans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class QuickSort<E extends Comparable<E>> {
 
@@ -11,6 +12,9 @@ public class QuickSort<E extends Comparable<E>> {
 		this.list = new ArrayList<E>(list);
 	}
 
+	/*
+	 * QuickSort Recursion Edition
+	 */
 	public void quickSort(int s, int e) {
 		if (s >= e) {
 			return;
@@ -37,6 +41,37 @@ public class QuickSort<E extends Comparable<E>> {
 		return part + 1;
 	}
 
+	/*
+	 * QuickSort Loop Edition
+	 */
+	public void loopQuickSort() {
+		Stack<LoopCondition> stack = new Stack<QuickSort.LoopCondition>();
+		stack.push(new LoopCondition(0, size() - 1));
+		while (!stack.isEmpty()) {
+			LoopCondition loop = stack.pop();
+			loopQuickSortSub(loop.getS(), loop.getE(), stack);
+		}
+	}
+
+	private void loopQuickSortSub(int s, int e, Stack<LoopCondition> stack) {
+		if (s >= e) {
+			return;
+		}
+		int part = partition(s, e);
+		stack.push(new LoopCondition(s, part - 1));
+		stack.push(new LoopCondition(part + 1, e));
+	}
+
+	private static class LoopCondition {
+		private int s;
+		private int e;
+		LoopCondition(int s, int e) {
+			this.s = s;
+			this.e = e;
+		}
+		int getS() { return s; }
+		int getE() { return e; }
+	}
 	private void exchangeTwo(int idx1, int idx2) {
 		if (idx1 > idx2) {
 			throw new IllegalArgumentException("idx1 must be smaller than or equal to idx2.");
