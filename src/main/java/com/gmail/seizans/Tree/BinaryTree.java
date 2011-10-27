@@ -2,37 +2,18 @@ package com.gmail.seizans.Tree;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
 public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTree<K, V>> {
-//	private BinaryTree<K, V> p;
 	private BinaryTree<K, V> lhs;
 	private BinaryTree<K, V> rhs;
 	private K key;
 	private V value;
 
-//	private BinaryTree(BinaryTree<K, V> p, BinaryTree<K, V> lhs, BinaryTree<K, V> rhs, K key, V value) {
-//		setup(p, lhs, rhs, key, value);
-//	}
-
-//	private BinaryTree(BinaryTree<K, V> p, K key, V value) {
-//		setup(p, null, null, key, value);
-//	}
-
 	public BinaryTree(K key, V value) {
 		setup(null, null, key, value);
 	}
-
-//	public BinaryTree<K, V> getP() { return p; }
-//	public BinaryTree<K, V> getLhs() { return lhs; }
-//	public BinaryTree<K, V> getRhs() { return rhs; }
-//	public K getKey() { return key; }
-//	public V getValue() { return value; }
-//
-//	public void setLhs(BinaryTree<K, V> lhs) { this.lhs = lhs; }
-//	public void setRhs(BinaryTree<K, V> rhs) { this.rhs = rhs; }
 
 	private void setup(BinaryTree<K, V> lhs, BinaryTree<K, V> rhs, K key, V value) {
 		this.lhs = lhs;
@@ -41,11 +22,24 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 		this.value = value;
 	}
 
+	public V search(K key) {
+		if (key == null) {
+			throw new IllegalArgumentException("Key must not be null.");
+		}
+		Iterator<BinaryTree<K, V>> iter = depthFirstIterator();
+		while (iter.hasNext()) {
+			BinaryTree<K, V> tree = iter.next();
+			if (key.equals(tree.key)) {
+				return tree.value;
+			}
+		}
+		return null;
+	}
+
 	public void insert(K key, V value) {
-		Queue<BinaryTree<K, V>> queue = new LinkedList<BinaryTree<K,V>>();
-		queue.add(this);
-		BinaryTree<K, V> tree;
-		while ((tree = queue.poll()) != null) {
+		Iterator<BinaryTree<K, V>> iter = breadthFirstIterator();
+		while (iter.hasNext()) {
+			BinaryTree<K, V> tree = iter.next();
 			if (tree.lhs == null) {
 				tree.lhs = new BinaryTree<K, V>(key, value);
 				return;
@@ -54,8 +48,6 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 				tree.rhs = new BinaryTree<K, V>(key, value);
 				return;
 			}
-			queue.add(tree.lhs);
-			queue.add(tree.rhs);
 		}
 	}
 
@@ -99,6 +91,10 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 	}
 
 	public Iterator<BinaryTree<K, V>> iterator() {
+		return depthFirstIterator();
+	}
+
+	public Iterator<BinaryTree<K, V>> depthFirstIterator() {
 		return new DepthFirstIterator();
 	}
 
@@ -132,29 +128,16 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 		
 	}
 
-	public Iterator<BinaryTree<K, V>> BreadthFirstIterator() {
+	public Iterator<BinaryTree<K, V>> breadthFirstIterator() {
 		return new BreadthFirstIterator();
 	}
 
 	private class BreadthFirstIterator implements Iterator<BinaryTree<K, V>> {
-
 		private Queue<BinaryTree<K, V>> queue = new LinkedList<BinaryTree<K,V>>();
 
 		private BreadthFirstIterator() {
 			queue.add(BinaryTree.this);
 		}
-
-//		private Queue<BinaryTree<K, V>> setupQueue(BinaryTree<K, V> tree) {
-//			Queue<BinaryTree<K, V>> queue = new LinkedList<BinaryTree<K,V>>();
-//			if (tree.lhs != null) {
-//				queue.addAll(setupQueue(tree.lhs));
-//			}
-//			queue.add(tree);
-//			if (tree.rhs != null) {
-//				queue.addAll(setupQueue(tree.rhs));
-//			}
-//			return queue;
-//		}
 
 		public boolean hasNext() {
 			return ! queue.isEmpty();
@@ -175,6 +158,6 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 			// TODO Auto-generated method stub
 			
 		}
-		
 	}
+
 }

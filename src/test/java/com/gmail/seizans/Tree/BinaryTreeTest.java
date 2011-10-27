@@ -22,6 +22,7 @@ public class BinaryTreeTest {
 		for (BinaryTree<Integer, String> node: root) {
 			System.out.println(node.toSimpleString());
 		}
+		System.out.println(root.search(6));
 	}
 
 	@Test
@@ -33,7 +34,7 @@ public class BinaryTreeTest {
 		root.insert(6, "six");
 		root.insert(12, "twelve");
 		root.insert(20, "twenty");
-		Iterator<BinaryTree<Integer, String>> iter = root.BreadthFirstIterator();
+		Iterator<BinaryTree<Integer, String>> iter = root.breadthFirstIterator();
 		while (iter.hasNext()) {
 			BinaryTree<Integer, String> tree = iter.next();
 			System.out.println(tree);
