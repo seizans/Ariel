@@ -6,16 +6,22 @@ import java.util.Queue;
 import java.util.Stack;
 
 public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTree<K, V>> {
+	private BinaryTree<K, V> p;
 	private BinaryTree<K, V> lhs;
 	private BinaryTree<K, V> rhs;
 	private K key;
 	private V value;
 
-	public BinaryTree(K key, V value) {
-		setup(null, null, key, value);
+	private BinaryTree(BinaryTree<K, V> p, K key, V value) {
+		setup(p, null, null, key, value);
 	}
 
-	private void setup(BinaryTree<K, V> lhs, BinaryTree<K, V> rhs, K key, V value) {
+	public BinaryTree(K key, V value) {
+		setup(null, null, null, key, value);
+	}
+
+	private void setup(BinaryTree<K, V> p, BinaryTree<K, V> lhs, BinaryTree<K, V> rhs, K key, V value) {
+		this.p = p;
 		this.lhs = lhs;
 		this.rhs = rhs;
 		this.key = key;
@@ -26,11 +32,16 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 		if (key == null) {
 			throw new IllegalArgumentException("Key must not be null.");
 		}
+		BinaryTree<K, V> tree = searchHelp(key);
+		return tree.value;
+	}
+
+	private BinaryTree<K, V> searchHelp(K key) {
 		Iterator<BinaryTree<K, V>> iter = depthFirstIterator();
 		while (iter.hasNext()) {
 			BinaryTree<K, V> tree = iter.next();
 			if (key.equals(tree.key)) {
-				return tree.value;
+				return tree;
 			}
 		}
 		return null;
@@ -41,11 +52,75 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 		while (iter.hasNext()) {
 			BinaryTree<K, V> tree = iter.next();
 			if (tree.lhs == null) {
-				tree.lhs = new BinaryTree<K, V>(key, value);
+				tree.lhs = new BinaryTree<K, V>(tree, key, value);
 				return;
 			}
 			if (tree.rhs == null) {
-				tree.rhs = new BinaryTree<K, V>(key, value);
+				tree.rhs = new BinaryTree<K, V>(tree, key, value);
+				return;
+			}
+		}
+	}
+
+	public void remove(K key) {
+		if (key == null) {
+			throw new IllegalArgumentException();
+		}
+		BinaryTree<K, V> tree = searchHelp(key);
+		if (tree == null) {
+			throw new RuntimeException("The node to remove is not found.");
+		}
+		removeHelp(tree);
+	}
+
+	private void removeHelp(BinaryTree<K, V> tree) {
+//		if (tree.lhs == null && tree.rhs == null) {
+//			if (tree.p.lhs.equals(tree)) {
+//				tree.p.lhs = null;
+//			} else {
+//				tree.p.rhs = null;
+//			}
+//			return;
+//		}
+		if (tree.lhs == null) {
+			if (tree.p.lhs.equals(tree)) {
+				tree.p.lhs = tree.rhs;
+			} else {
+				tree.p.rhs = tree.rhs;
+			}
+			return;
+		}
+		if (tree.rhs == null) {
+			if (tree.p.lhs.equals(tree)) {
+				tree.p.lhs = tree.lhs;
+			} else {
+				tree.p.rhs = tree.lhs;
+			}
+			return;
+		}
+		Iterator<BinaryTree<K, V>> iter = tree.depthFirstIterator();
+		while (iter.hasNext()) {
+			BinaryTree<K, V> t = iter.next();
+			if (t.lhs == null) {
+				if (t.p.lhs.equals(t)) {
+					t.p.lhs = t.rhs;
+				} else {
+					t.p.rhs = t.rhs;
+				}
+				t.lhs = tree.lhs;
+				t.rhs = tree.rhs;
+				tree = t;
+				return;
+			}
+			if (t.rhs == null) {
+				if (t.p.lhs.equals(t)) {
+					t.p.lhs = t.lhs;
+				} else {
+					t.p.rhs = t.lhs;
+				}
+				t.lhs = tree.lhs;
+				t.rhs = tree.rhs;
+				tree = t;
 				return;
 			}
 		}

@@ -23,6 +23,10 @@ public class BinaryTreeTest {
 			System.out.println(node.toSimpleString());
 		}
 		System.out.println(root.search(6));
+		root.remove(6);
+		System.out.println(root);
+		root.remove(5);
+		System.out.println(root);
 	}
 
 	@Test
