@@ -2,6 +2,7 @@ package com.gmail.seizans.Tree;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -33,9 +34,13 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 			throw new IllegalArgumentException("Key must not be null.");
 		}
 		BinaryTree<K, V> tree = searchHelp(key);
-		return tree.value;
+		return tree == null ? null : tree.value;
 	}
 
+	/*
+	 * key で search した結果の subTree を返す。
+	 * 見つからなかった場合は null を返すので、返り値への null チェックが必要。
+	 */
 	private BinaryTree<K, V> searchHelp(K key) {
 		Iterator<BinaryTree<K, V>> iter = depthFirstIterator();
 		while (iter.hasNext()) {
@@ -63,35 +68,57 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 	}
 
 	public void remove(K key) {
+		System.out.println(key);
 		if (key == null) {
 			throw new IllegalArgumentException();
 		}
+		if (key.equals(47))
+			System.out.println(this);
 		BinaryTree<K, V> tree = searchHelp(key);
 		if (tree == null) {
-			throw new RuntimeException("The node to remove is not found.");
+			throw new NoSuchElementException();
 		}
 		removeHelp(tree);
 	}
 
 	private void removeHelp(BinaryTree<K, V> tree) {
-//		if (tree.lhs == null && tree.rhs == null) {
-//			if (tree.p.lhs.equals(tree)) {
-//				tree.p.lhs = null;
-//			} else {
-//				tree.p.rhs = null;
-//			}
-//			return;
-//		}
+		Iterator<BinaryTree<K, V>> iter = tree.depthFirstIterator();
+		while (iter.hasNext()) {
+			BinaryTree<K, V> t = iter.next();
+			if (t.lhs == null && t.rhs == null) {
+			}
+			if (t.lhs == null) {
+				t.lhs = t.rhs.lhs;
+				t.key = t.rhs.key;
+				t.value = t.rhs.value;
+				t.rhs = t.rhs.rhs;
+			}
+		}
+	}
+		/*
 		if (tree.lhs == null) {
-			if (tree.p.lhs.equals(tree)) {
+			if (tree.p == null) {
+				if (tree.rhs == null) {
+					tree.key = null;
+					tree.value = null;
+				} else {
+					tree = rhs;
+				}
+			} else if (tree.equals(tree.p.lhs)) {
 				tree.p.lhs = tree.rhs;
 			} else {
 				tree.p.rhs = tree.rhs;
 			}
 			return;
-		}
-		if (tree.rhs == null) {
-			if (tree.p.lhs.equals(tree)) {
+		} else if (tree.rhs == null) {
+			if (tree.p == null) {
+				if (tree.lhs == null) {
+					tree.key = null;
+					tree.value = null;
+				} else {
+					tree = lhs;
+				}
+			} else if (tree.equals(tree.p.lhs)) {
 				tree.p.lhs = tree.lhs;
 			} else {
 				tree.p.rhs = tree.lhs;
@@ -99,6 +126,28 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 			return;
 		}
 		Iterator<BinaryTree<K, V>> iter = tree.depthFirstIterator();
+		iter.next();
+		BinaryTree<K, V> t2 = iter.next();
+		if (t2.lhs == null) {
+			if (t2.p.lhs.equals(t2)) {
+				t2.p.lhs = t2.rhs;
+			} else {
+				t2.p.rhs = t2.rhs;
+			}
+			t2.p.key = t2.key;
+			t2.p.value = t2.value;
+			return;
+		}
+		if (t2.rhs == null) {
+			if (t2.p.lhs.equals(t2)) {
+				t2.p.lhs = t2.lhs;
+			} else {
+				t2.p.rhs = t2.lhs;
+			}
+			t2.p.key = t2.key;
+			t2.p.value = t2.value;
+			return;
+		}
 		while (iter.hasNext()) {
 			BinaryTree<K, V> t = iter.next();
 			if (t.lhs == null) {
@@ -109,6 +158,8 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 				}
 				t.lhs = tree.lhs;
 				t.rhs = tree.rhs;
+				t.lhs.p = t;
+				t.rhs.p = t;
 				tree = t;
 				return;
 			}
@@ -120,11 +171,14 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 				}
 				t.lhs = tree.lhs;
 				t.rhs = tree.rhs;
+				t.lhs.p = t;
+				t.rhs.p = t;
 				tree = t;
 				return;
 			}
 		}
 	}
+	*/
 
 	@Override
 	public String toString() {
@@ -176,16 +230,23 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 	private class DepthFirstIterator implements Iterator<BinaryTree<K, V>> {
 
 		private final Stack<BinaryTree<K, V>> stack = new Stack<BinaryTree<K,V>>();
+		private BinaryTree<K, V> last;
+		private BinaryTree<K, V> present;
 
 		private DepthFirstIterator() {
+			last = null;
+			present = BinaryTree.this;
 			stack.push(BinaryTree.this);
 		}
 
 		public boolean hasNext() {
-			return !stack.empty();
+			return ! stack.empty();
 		}
 
 		public BinaryTree<K, V> next() {
+			if (stack.isEmpty()) {
+				throw new NoSuchElementException();
+			}
 			BinaryTree<K, V> tree = stack.pop();
 			if (tree.rhs != null) {
 				stack.push(tree.rhs);
@@ -193,12 +254,17 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 			if (tree.lhs != null) {
 				stack.push(tree.lhs);
 			}
+			last = present;
+			present = tree;
 			return tree;
 		}
 
 		public void remove() {
-			// TODO Auto-generated method stub
-			
+			if (present.equals(last)) {
+				throw new IllegalStateException();
+			}
+			BinaryTree.this.remove(present.key);
+			present = last;
 		}
 		
 	}
@@ -219,6 +285,9 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 		}
 
 		public BinaryTree<K, V> next() {
+			if (queue.isEmpty()) {
+				throw new NoSuchElementException();
+			}
 			BinaryTree<K, V> tree = queue.poll();
 			if (tree.lhs != null) {
 				queue.add(tree.lhs);
