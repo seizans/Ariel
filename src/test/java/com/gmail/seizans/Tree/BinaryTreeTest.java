@@ -59,10 +59,16 @@ public class BinaryTreeTest {
 		} catch(NoSuchElementException e) {
 		}
 
-		for (int i = 11; i < N; i++) {
+		for (int i = 0; i < N; i++) {
 			tree.remove(i);
 		}
-		System.out.println(tree.toDString());
+		
+		for (int i = 0; i< N; i++) {
+			String s = tree.search(i);
+			assertThat(s, is(nullValue()));
+		}
+
+		//System.out.println(tree.toDString());
 	}
 
 	@Test

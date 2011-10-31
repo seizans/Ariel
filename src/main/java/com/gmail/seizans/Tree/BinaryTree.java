@@ -7,26 +7,26 @@ import java.util.Queue;
 import java.util.Stack;
 
 public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTree<K, V>> {
-	private BinaryTree<K, V> p;
 	private BinaryTree<K, V> lhs;
 	private BinaryTree<K, V> rhs;
 	private K key;
 	private V value;
+	private boolean isRoot;
 
-	private BinaryTree(BinaryTree<K, V> p, K key, V value) {
-		setup(p, null, null, key, value);
+	private BinaryTree(K key, V value, boolean isRoot) {
+		setup(null, null, key, value, isRoot);
 	}
 
 	public BinaryTree(K key, V value) {
-		setup(null, null, null, key, value);
+		setup(null, null, key, value, true);
 	}
 
-	private void setup(BinaryTree<K, V> p, BinaryTree<K, V> lhs, BinaryTree<K, V> rhs, K key, V value) {
-		this.p = p;
+	private void setup(BinaryTree<K, V> lhs, BinaryTree<K, V> rhs, K key, V value, boolean isRoot) {
 		this.lhs = lhs;
 		this.rhs = rhs;
 		this.key = key;
 		this.value = value;
+		this.isRoot = isRoot;
 	}
 
 	public V search(K key) {
@@ -57,23 +57,20 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 		while (iter.hasNext()) {
 			BinaryTree<K, V> tree = iter.next();
 			if (tree.lhs == null) {
-				tree.lhs = new BinaryTree<K, V>(tree, key, value);
+				tree.lhs = new BinaryTree<K, V>(key, value, false);
 				return;
 			}
 			if (tree.rhs == null) {
-				tree.rhs = new BinaryTree<K, V>(tree, key, value);
+				tree.rhs = new BinaryTree<K, V>(key, value, false);
 				return;
 			}
 		}
 	}
 
 	public void remove(K key) {
-		System.out.println(key);
 		if (key == null) {
 			throw new IllegalArgumentException();
 		}
-		if (key.equals(47))
-			System.out.println(this);
 		BinaryTree<K, V> tree = searchHelp(key);
 		if (tree == null) {
 			throw new NoSuchElementException();
@@ -83,15 +80,35 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 
 	private void removeHelp(BinaryTree<K, V> tree) {
 		Iterator<BinaryTree<K, V>> iter = tree.depthFirstIterator();
+		BinaryTree<K, V> last = null;
 		while (iter.hasNext()) {
 			BinaryTree<K, V> t = iter.next();
 			if (t.lhs == null && t.rhs == null) {
-			}
-			if (t.lhs == null) {
+				if (t.isRoot) {
+					t.key = null;
+					t.value = null;
+				} else if (last != null && last.lhs.equals(t)) {
+					last.lhs = null;
+				} else if (last != null  && last.rhs.equals(t)) {
+					last.rhs = null;
+				}
+				return;
+			} else if (t.lhs == null) {
 				t.lhs = t.rhs.lhs;
 				t.key = t.rhs.key;
 				t.value = t.rhs.value;
 				t.rhs = t.rhs.rhs;
+				return;
+			} else if (t.rhs == null) {
+				t.rhs = t.lhs.rhs;
+				t.key = t.lhs.key;
+				t.value = t.lhs.value;
+				t.lhs = t.lhs.lhs;
+				return;
+			} else {
+				t.key =  t.lhs.key;
+				t.value = t.lhs.value;
+				last = t;
 			}
 		}
 	}
