@@ -316,8 +316,7 @@ public class BinaryTree<K extends Comparable<K>, V> implements Iterable<BinaryTr
 		}
 
 		public void remove() {
-			// TODO Auto-generated method stub
-			
+			throw new UnsupportedOperationException();
 		}
 	}
 
