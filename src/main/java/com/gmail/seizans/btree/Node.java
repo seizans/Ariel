@@ -11,8 +11,10 @@ final class Node<E extends Comparable<E>> extends NodeCommon<E> implements INode
 	}
 
 	public boolean search(E e) {
-		// TODO Auto-generated method stub
-		return false;
+		if (keys.indexOf(e) != -1) {
+			return true;
+		}
+		return children.get(childIndexOf(e)).search(e);
 	}
 
 	public void insert(E e) {

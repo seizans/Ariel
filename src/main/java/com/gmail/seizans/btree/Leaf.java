@@ -11,8 +11,7 @@ final class Leaf<E extends Comparable<E>> extends NodeCommon<E> implements INode
 	}
 
 	public boolean search(E e) {
-		// TODO Auto-generated method stub
-		return false;
+		return keys.indexOf(e) != -1;
 	}
 
 	public void insert(E e) {

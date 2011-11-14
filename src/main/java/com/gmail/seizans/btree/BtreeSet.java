@@ -7,7 +7,7 @@ public final class BtreeSet<E extends Comparable<E>> {
 	}
 
 	public boolean search(E e) {
-		return false;
+		return root.search(e);
 	}
 
 	public void insert(E e) {
