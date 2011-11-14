@@ -11,6 +11,10 @@ public final class BtreeSet<E extends Comparable<E>> {
 	}
 
 	public void insert(E e) {
+		if (e == null) {
+			throw new IllegalArgumentException();
+		}
+
 		if (root.isFull()) {
 			root = root.rootSplit();
 		}
