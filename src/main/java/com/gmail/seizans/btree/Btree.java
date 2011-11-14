@@ -8,7 +8,6 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 
 // TODO collect common function up
-// TODO Listに対して与えられた要素を超える最初のindexを返す関数
 public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 	private final int degree;
 	private final List<E> keys;

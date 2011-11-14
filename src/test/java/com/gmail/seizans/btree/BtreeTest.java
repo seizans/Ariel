@@ -11,7 +11,20 @@ import org.junit.Test;
 
 public class BtreeTest {
 
-
+	@Test
+	public void deleteTest() {
+		final int N = 50;
+		Btree<Integer> btree = new Btree<Integer>(3);
+		for (int i = 0; i < N; i++) {
+			btree.insert(i);
+		}
+		
+		System.out.println(btree);
+		btree.delete(49);
+		btree.delete(48);
+		btree.delete(47);
+		System.out.println(btree);
+	}
 
 	@Test
 	public void insertTest3() {
