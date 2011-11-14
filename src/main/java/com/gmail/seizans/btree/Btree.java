@@ -7,6 +7,8 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
 
+// TODO collect common function up
+// TODO Listに対して与えられた要素を超える最初のindexを返す関数
 public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 	private final int degree;
 	private final List<E> keys;
@@ -249,13 +251,106 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 	}
 
 	public void delete(E e) {
-		
+		if (isLeaf) {
+			leafDelete(e);
+			return;
+		}
+		int index = keys.indexOf(e);
+		if (index == -1) {
+			int upperIndex = upperIndexOf(e);
+			if (upperIndex == -1) {
+				if (children.get(keys.size()).keys.size() == degree - 1) {
+					if (children.get(keys.size() - 1).keys.size() == degree - 1) {
+						mergeChild(keys.size() - 1);
+						children.get(keys.size() - 1).delete(e);
+					} else {
+						moveKeyToRight(keys.size() - 1);
+						children.get(keys.size()).delete(e);
+					}
+				} else {
+					children.get(keys.size()).delete(e);
+				}
+			} else {
+				if (children.get(upperIndex).keys.size() == degree - 1) {
+					if (children.get(upperIndex + 1).keys.size() == degree - 1) {
+						mergeChild(upperIndex);
+						children.get(upperIndex).delete(e);
+					} else {
+						moveKeyToLeft(upperIndex + 1);
+						children.get(upperIndex).delete(e);
+					}
+				} else {
+					children.get(upperIndex).delete(e);
+				}
+			}
+			return;
+		} else {
+			if (children.get(index).keys.size() >= degree) {
+				E e2 = children.get(index).getMax();
+				keys.remove(index);
+				keys.add(index, e2);
+				children.get(index).delete(e2);
+			} else if (children.get(index + 1).keys.size() >= degree) {
+				E e2 = children.get(index + 1).getMin();
+				keys.remove(index);
+				keys.add(index, e2);
+				children.get(index + 1).delete(e2);
+			} else {
+				mergeChild(index);
+				children.get(index).delete(e);
+			}
+			return;
+		}
 	}
 
-//	@Override
-//	public String toString() {
-//		return 
-//	}
+	private void leafDelete(E e) {
+		int index = keys.indexOf(e);
+		if (index == -1) {
+			throw new NoSuchElementException();
+		}
+		keys.remove(index);
+	}
+	
+	// 前提条件：children.get(idx) も children.get(idx + 1) も size == degree - 1
+	private void mergeChild(int idx) {
+		Btree<E> lhs = children.get(idx);
+		Btree<E> rhs = children.get(idx + 1);
+		lhs.keys.add(keys.get(idx));
+		keys.remove(idx);
+		for (int i = 0; i < degree - 1; i++) {
+			lhs.keys.add(rhs.keys.get(i));
+			lhs.children.add(rhs.children.get(i));
+		}
+		lhs.children.add(rhs.children.get(degree - 1));
+		children.remove(idx + 1);
+	}
+
+	// 前提条件：children.get(idx).keys.size() >= degree
+	private void moveKeyToRight(int idx) {
+		Btree<E> lhs = children.get(idx);
+		Btree<E> rhs = children.get(idx + 1);
+		rhs.keys.add(keys.get(idx));
+		keys.remove(idx);
+		if (!lhs.isLeaf) {
+			rhs.children.add(lhs.children.get(lhs.children.size() - 1));
+			lhs.children.remove(lhs.children.size() - 1);
+		}
+		keys.add(idx, lhs.keys.get(lhs.keys.size() - 1));
+		lhs.keys.remove(lhs.keys.size() - 1);
+	}
+
+	private void moveKeyToLeft(int idx) {
+		Btree<E> lhs = children.get(idx - 1);
+		Btree<E> rhs = children.get(idx);
+		if (!lhs.isLeaf) {
+			lhs.children.add(rhs.children.get(0));
+			rhs.children.remove(0);
+		}
+		lhs.keys.add(keys.get(idx));
+		keys.remove(idx);
+		keys.add(idx, rhs.keys.get(0));
+		rhs.keys.remove(0);
+	}
 
 	public Iterator<E> iterator() {
 		return new OrderIterator();
@@ -340,5 +435,30 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 			}
 		}
 		return sb.toString();
+	}
+
+	private E getMax() {
+		if (isLeaf) {
+			return keys.get(keys.size() - 1);
+		} else {
+			return children.get(children.size() - 1).getMax();
+		}
+	}
+
+	private E getMin() {
+		if (isLeaf) {
+			return keys.get(0);
+		} else {
+			return children.get(0).getMin();
+		}
+	}
+
+	private int upperIndexOf(E e) {
+		for (int i = 0; i < keys.size(); i++) {
+			if (e.compareTo(keys.get(i)) < 0) {
+				return i;
+			}
+		}
+		return -1;
 	}
 }
