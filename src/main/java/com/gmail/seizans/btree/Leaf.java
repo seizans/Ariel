@@ -2,7 +2,7 @@ package com.gmail.seizans.btree;
 
 import java.util.ArrayList;
 
-final class Leaf<E extends Comparable<E>> extends NodeCommon<E> implements INode<E> {
+final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 
 	Leaf(int deg) {
 		this.deg = deg;
@@ -10,11 +10,11 @@ final class Leaf<E extends Comparable<E>> extends NodeCommon<E> implements INode
 		this.children = null;
 	}
 
-	public boolean search(E e) {
+	boolean search(E e) {
 		return keys.indexOf(e) != -1;
 	}
 
-	public void insert(E e) {
+	void insert(E e) {
 		if (keys.indexOf(e) != -1) {
 			throw new RuntimeException("The element already exists.");
 		}
@@ -22,7 +22,7 @@ final class Leaf<E extends Comparable<E>> extends NodeCommon<E> implements INode
 		keys.add(idx, e);
 	}
 
-	public void delete(E e) {
+	void delete(E e) {
 		int index = keys.indexOf(e);
 		if (index == -1) {
 			throw new IllegalArgumentException("The element does not exist.");
@@ -30,7 +30,7 @@ final class Leaf<E extends Comparable<E>> extends NodeCommon<E> implements INode
 		keys.remove(index);
 	}
 
-	public Tuple2<E, INode<E>> split() {
+	Tuple2<E, AbsNode<E>> split() {
 		Leaf<E> newLeaf = new Leaf<E>(deg);
 		for (int i = 0; i < deg - 1; i++) {
 			newLeaf.keys.add(keys.get(deg + i));
@@ -42,10 +42,10 @@ final class Leaf<E extends Comparable<E>> extends NodeCommon<E> implements INode
 
 		E center = keys.get(deg - 1);
 		keys.remove(deg - 1);
-		return new Tuple2<E, INode<E>>(center, newLeaf);
+		return new Tuple2<E, AbsNode<E>>(center, newLeaf);
 	}
 
-	public INode<E> rootSplit() {
+	AbsNode<E> rootSplit() {
 		Node<E> root = new Node<E>(deg);
 		Leaf<E> lhs = new Leaf<E>(deg);
 		Leaf<E> rhs = new Leaf<E>(deg);

@@ -1,7 +1,7 @@
 package com.gmail.seizans.btree;
 
 public final class BtreeSet<E extends Comparable<E>> {
-	private INode<E> root;
+	private AbsNode<E> root;
 	public BtreeSet(int deg) {
 		root = new Leaf<E>(deg);
 	}

@@ -2,22 +2,22 @@ package com.gmail.seizans.btree;
 
 import java.util.ArrayList;
 
-final class Node<E extends Comparable<E>> extends NodeCommon<E> implements INode<E> {
+final class Node<E extends Comparable<E>> extends AbsNode<E> {
 
 	Node(int deg) {
 		this.deg = deg;
 		this.keys = new ArrayList<E>(deg * 2 - 1);
-		this.children = new ArrayList<INode<E>>(deg * 2);
+		this.children = new ArrayList<AbsNode<E>>(deg * 2);
 	}
 
-	public boolean search(E e) {
+	boolean search(E e) {
 		if (keys.indexOf(e) != -1) {
 			return true;
 		}
 		return children.get(childIndexOf(e)).search(e);
 	}
 
-	public void insert(E e) {
+	void insert(E e) {
 		if (keys.indexOf(e) != -1) {
 			throw new RuntimeException("The element already exists.");
 		}
@@ -37,12 +37,12 @@ final class Node<E extends Comparable<E>> extends NodeCommon<E> implements INode
 	}
 
 	private void childSplit(int index) {
-		Tuple2<E, INode<E>> tuple = children.get(index).split();
+		Tuple2<E, AbsNode<E>> tuple = children.get(index).split();
 		keys.add(index, tuple.fst());
 		children.add(index + 1, tuple.snd());
 	}
 
-	public void delete(E e) {
+	void delete(E e) {
 		int keyIndex = keys.indexOf(e);
 		if (keyIndex == -1) {
 			deleteIfNotExist(e);
@@ -51,7 +51,7 @@ final class Node<E extends Comparable<E>> extends NodeCommon<E> implements INode
 		}
 	}
 
-	private void deleteIfExist(E e) {
+	void deleteIfExist(E e) {
 		int index = keys.indexOf(e);
 		
 	}
@@ -68,7 +68,7 @@ final class Node<E extends Comparable<E>> extends NodeCommon<E> implements INode
 		}
 	}
 
-	public Tuple2<E, INode<E>> split() {
+	Tuple2<E, AbsNode<E>> split() {
 		Node<E> newNode = new Node<E>(deg);
 		for (int i = 0; i < deg - 1; i++) {
 			newNode.keys.add(keys.get(deg + i));
@@ -84,10 +84,10 @@ final class Node<E extends Comparable<E>> extends NodeCommon<E> implements INode
 
 		E center = keys.get(deg - 1);
 		keys.remove(deg - 1);
-		return new Tuple2<E, INode<E>>(center, newNode);
+		return new Tuple2<E, AbsNode<E>>(center, newNode);
 	}
 
-	public INode<E> rootSplit() {
+	AbsNode<E> rootSplit() {
 		Node<E> root = new Node<E>(deg);
 		Node<E> lhs = new Node<E>(deg);
 		Node<E> rhs = new Node<E>(deg);
