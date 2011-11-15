@@ -43,8 +43,29 @@ final class Node<E extends Comparable<E>> extends NodeCommon<E> implements INode
 	}
 
 	public void delete(E e) {
-		// TODO Auto-generated method stub
+		int keyIndex = keys.indexOf(e);
+		if (keyIndex == -1) {
+			deleteIfNotExist(e);
+		} else {
+			deleteIfExist(e);
+		}
+	}
+
+	private void deleteIfExist(E e) {
+		int index = keys.indexOf(e);
 		
+	}
+
+	private void deleteIfNotExist(E e) {
+		int index = childIndexOf(e);
+//		if (children.get(index).keys.size() != deg - 1)
+		if (index == 0) {
+			
+		} else if (index == children.size() - 1) {
+			
+		} else {
+			
+		}
 	}
 
 	public Tuple2<E, INode<E>> split() {

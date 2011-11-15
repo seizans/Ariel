@@ -7,6 +7,9 @@ public final class BtreeSet<E extends Comparable<E>> {
 	}
 
 	public boolean search(E e) {
+		if (e == null) {
+			throw new IllegalArgumentException();
+		}
 		return root.search(e);
 	}
 
@@ -22,7 +25,10 @@ public final class BtreeSet<E extends Comparable<E>> {
 	}
 
 	public void delete(E e) {
-		
+		if (e == null) {
+			throw new IllegalArgumentException();
+		}
+		root.delete(e);
 	}
 
 	@Override

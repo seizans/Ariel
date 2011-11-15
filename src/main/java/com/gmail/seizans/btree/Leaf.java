@@ -23,8 +23,11 @@ final class Leaf<E extends Comparable<E>> extends NodeCommon<E> implements INode
 	}
 
 	public void delete(E e) {
-		// TODO Auto-generated method stub
-		
+		int index = keys.indexOf(e);
+		if (index == -1) {
+			throw new IllegalArgumentException("The element does not exist.");
+		}
+		keys.remove(index);
 	}
 
 	public Tuple2<E, INode<E>> split() {
