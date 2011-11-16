@@ -10,6 +10,7 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		this.children = new ArrayList<AbsNode<E>>(deg * 2);
 	}
 
+	@Override
 	boolean search(E e) {
 		if (keys.indexOf(e) != -1) {
 			return true;
@@ -17,6 +18,7 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		return children.get(childIndexOf(e)).search(e);
 	}
 
+	@Override
 	void insert(E e) {
 		if (keys.indexOf(e) != -1) {
 			throw new RuntimeException("The element already exists.");
@@ -42,6 +44,7 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		children.add(index + 1, tuple.snd());
 	}
 
+	@Override
 	void delete(E e) {
 		int keyIndex = keys.indexOf(e);
 		if (keyIndex == -1) {
@@ -51,23 +54,127 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		}
 	}
 
-	void deleteIfExist(E e) {
+	private void deleteIfExist(E e) {
 		int index = keys.indexOf(e);
-		
+		if (children.get(index).size() >= deg) {
+			E e2 = children.get(index).maxKey();
+			keys.remove(index);
+			keys.add(index, e2);
+			children.get(index).delete(e2);
+			return;
+		} else if (children.get(index + 1).size() >= deg) {
+			E e2 = children.get(index + 1).minKey();
+			keys.remove(index);
+			keys.add(index, e2);
+			children.get(index + 1).delete(e2);
+			return;
+		} else {
+			mergeChild(index);
+			children.get(index).delete(e);
+		}
+	}
+
+	@Override
+	E maxKey() {
+		return children.get(children.size() - 1).maxKey();
+	}
+
+	@Override
+	E minKey() {
+		return children.get(0).minKey();
 	}
 
 	private void deleteIfNotExist(E e) {
 		int index = childIndexOf(e);
-//		if (children.get(index).keys.size() != deg - 1)
+		if (children.get(index).size() != deg - 1) {
+			children.get(index).delete(e);
+			return;
+		}
 		if (index == 0) {
-			
+			if (children.get(index + 1).size() != deg - 1) {
+				moveToLeft(index + 1);
+			} else {
+				mergeChild(index);
+			}
+			children.get(index).delete(e);
 		} else if (index == children.size() - 1) {
-			
+			if (children.get(index - 1).size() != deg - 1) {
+				moveToRight(index - 1);
+			} else {
+				mergeChild(index - 1);
+			}
+			children.get(index - 1).delete(e);
 		} else {
-			
+			if (children.get(index + 1).size() != deg - 1) {
+				moveToLeft(index + 1);
+			} else if (children.get(index - 1).size() != deg - 1) {
+				moveToRight(index - 1);
+			} else {
+				mergeChild(index);
+			}
+			children.get(index).delete(e);
 		}
 	}
 
+	private void mergeChild(int index) {
+		addRight(keys.get(index), children.get(index + 1));
+		keys.remove(index);
+		children.remove(index + 1);
+	}
+
+	@Override
+	void addRight(E key, AbsNode<E> right) {
+		keys.add(key);
+		keys.addAll(right.keys);
+		children.addAll(right.children);
+	}
+
+	@Override
+	void addLeft(E key, AbsNode<E> left) {
+		left.keys.add(key);
+		left.keys.addAll(keys);
+		keys.clear();
+		keys.addAll(left.keys);
+		left.children.addAll(children);
+		children.clear();
+		children.addAll(left.children);
+	}
+
+	private void moveToRight(int index) {
+		Tuple2<E, AbsNode<E>> tuple = children.get(index).popRight();
+		E key = keys.get(index);
+		keys.remove(index);
+		keys.add(index, tuple.fst());
+		children.get(index + 1).addLeft(key, tuple.snd());
+	}
+
+	private void moveToLeft(int index) {
+		Tuple2<E, AbsNode<E>> tuple = children.get(index).popLeft();
+		E key = keys.get(index);
+		keys.remove(index);
+		keys.add(index, tuple.fst());
+		children.get(index - 1).addRight(key, tuple.snd());
+	}
+
+	@Override
+	Tuple2<E, AbsNode<E>> popRight() {
+		E key = keys.get(keys.size() - 1);
+		AbsNode<E> child = children.get(children.size() - 1);
+		keys.remove(keys.size() - 1);
+		children.remove(children.size() - 1);
+		return new Tuple2<E, AbsNode<E>>(key, child);
+	}
+
+	@Override
+	Tuple2<E, AbsNode<E>> popLeft() {
+		E key = keys.get(0);
+		AbsNode<E> child = children.get(0);
+		keys.remove(0);
+		children.remove(0);
+		return new Tuple2<E, AbsNode<E>>(key, child);
+	}
+
+	@Override
 	Tuple2<E, AbsNode<E>> split() {
 		Node<E> newNode = new Node<E>(deg);
 		for (int i = 0; i < deg - 1; i++) {
@@ -87,6 +194,7 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		return new Tuple2<E, AbsNode<E>>(center, newNode);
 	}
 
+	@Override
 	AbsNode<E> rootSplit() {
 		Node<E> root = new Node<E>(deg);
 		Node<E> lhs = new Node<E>(deg);

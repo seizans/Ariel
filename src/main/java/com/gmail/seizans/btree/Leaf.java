@@ -10,10 +10,12 @@ final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 		this.children = null;
 	}
 
+	@Override
 	boolean search(E e) {
 		return keys.indexOf(e) != -1;
 	}
 
+	@Override
 	void insert(E e) {
 		if (keys.indexOf(e) != -1) {
 			throw new RuntimeException("The element already exists.");
@@ -22,6 +24,7 @@ final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 		keys.add(idx, e);
 	}
 
+	@Override
 	void delete(E e) {
 		int index = keys.indexOf(e);
 		if (index == -1) {
@@ -30,6 +33,7 @@ final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 		keys.remove(index);
 	}
 
+	@Override
 	Tuple2<E, AbsNode<E>> split() {
 		Leaf<E> newLeaf = new Leaf<E>(deg);
 		for (int i = 0; i < deg - 1; i++) {
@@ -43,6 +47,44 @@ final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 		E center = keys.get(deg - 1);
 		keys.remove(deg - 1);
 		return new Tuple2<E, AbsNode<E>>(center, newLeaf);
+	}
+
+	@Override
+	E maxKey() {
+		return keys.get(keys.size() - 1);
+	}
+
+	@Override
+	E minKey() {
+		return keys.get(0);
+	}
+
+	@Override
+	void addRight(E key, AbsNode<E> right) {
+		keys.add(key);
+		keys.addAll(right.keys);
+	}
+
+	@Override
+	void addLeft(E key, AbsNode<E> left) {
+		left.keys.add(key);
+		left.keys.addAll(keys);
+		keys.clear();
+		keys.addAll(left.keys);
+	}
+
+	@Override
+	Tuple2<E, AbsNode<E>> popRight() {
+		E key = keys.get(keys.size() - 1);
+		keys.remove(keys.size() - 1);
+		return new Tuple2<E, AbsNode<E>>(key, null);
+	}
+
+	@Override
+	Tuple2<E, AbsNode<E>> popLeft() {
+		E key = keys.get(0);
+		keys.remove(0);
+		return new Tuple2<E, AbsNode<E>>(key, null);
 	}
 
 	AbsNode<E> rootSplit() {
