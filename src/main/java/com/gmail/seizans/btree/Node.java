@@ -117,7 +117,7 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 	}
 
 	private void mergeChild(int index) {
-		addRight(keys.get(index), children.get(index + 1));
+		children.get(index).addRight(keys.get(index), children.get(index + 1));
 		keys.remove(index);
 		children.remove(index + 1);
 	}
@@ -130,14 +130,22 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 	}
 
 	@Override
-	void addLeft(E key, AbsNode<E> left) {
-		left.keys.add(key);
-		left.keys.addAll(keys);
-		keys.clear();
-		keys.addAll(left.keys);
-		left.children.addAll(children);
-		children.clear();
-		children.addAll(left.children);
+	void pushRight(E key, AbsNode<E> right) {
+		keys.add(key);
+		children.add(right);
+	}
+
+	@Override
+	void pushLeft(E key, AbsNode<E> left) {
+		keys.add(0, key);
+		children.add(0, left);
+//		left.keys.add(key);
+//		left.keys.addAll(keys);
+//		keys.clear();
+//		keys.addAll(left.keys);
+//		left.children.addAll(children);
+//		children.clear();
+//		children.addAll(left.children);
 	}
 
 	private void moveToRight(int index) {
@@ -145,15 +153,15 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		E key = keys.get(index);
 		keys.remove(index);
 		keys.add(index, tuple.fst());
-		children.get(index + 1).addLeft(key, tuple.snd());
+		children.get(index + 1).pushLeft(key, tuple.snd());
 	}
 
 	private void moveToLeft(int index) {
 		Tuple2<E, AbsNode<E>> tuple = children.get(index).popLeft();
-		E key = keys.get(index);
-		keys.remove(index);
-		keys.add(index, tuple.fst());
-		children.get(index - 1).addRight(key, tuple.snd());
+		E key = keys.get(index - 1);
+		keys.remove(index - 1);
+		keys.add(index - 1, tuple.fst());
+		children.get(index - 1).pushRight(key, tuple.snd());
 	}
 
 	@Override

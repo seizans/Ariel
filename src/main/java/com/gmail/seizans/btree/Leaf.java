@@ -66,11 +66,17 @@ final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 	}
 
 	@Override
-	void addLeft(E key, AbsNode<E> left) {
-		left.keys.add(key);
-		left.keys.addAll(keys);
-		keys.clear();
-		keys.addAll(left.keys);
+	void pushRight(E key, AbsNode<E> right) {
+		keys.add(key);
+	}
+
+	@Override
+	void pushLeft(E key, AbsNode<E> left) {
+		keys.add(0, key);
+//		left.keys.add(key);
+//		left.keys.addAll(keys);
+//		keys.clear();
+//		keys.addAll(left.keys);
 	}
 
 	@Override

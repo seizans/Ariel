@@ -29,6 +29,9 @@ public final class BtreeSet<E extends Comparable<E>> {
 			throw new IllegalArgumentException();
 		}
 		root.delete(e);
+		if (root.isEmpty()) {
+			root = root.children.get(0);
+		}
 	}
 
 	@Override
