@@ -1,10 +1,14 @@
 package com.gmail.seizans.btree;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 
 	Leaf(int deg) {
+		if (deg < 2) {
+			throw new IllegalArgumentException("Degree must be greater than or equal to 2.");
+		}
 		this.deg = deg;
 		this.keys = new ArrayList<E>(deg * 2 - 1);
 		this.children = null;
@@ -105,6 +109,13 @@ final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 		root.children.add(lhs);
 		root.children.add(rhs);
 		return root;
+	}
+
+	@Override
+	void pushForIterator(Stack<Object> stack) {
+		for (int i = 0; i < keys.size(); i++) {
+			stack.push(keys.get(keys.size() - 1 - i));
+		}
 	}
 
 	@Override

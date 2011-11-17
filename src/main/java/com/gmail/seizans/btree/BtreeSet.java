@@ -1,6 +1,8 @@
 package com.gmail.seizans.btree;
 
-public final class BtreeSet<E extends Comparable<E>> {
+import java.util.Iterator;
+
+public final class BtreeSet<E extends Comparable<E>> implements Iterable<E> {
 	private AbsNode<E> root;
 	public BtreeSet(int deg) {
 		root = new Leaf<E>(deg);
@@ -29,13 +31,18 @@ public final class BtreeSet<E extends Comparable<E>> {
 			throw new IllegalArgumentException();
 		}
 		root.delete(e);
-		if (root.isEmpty()) {
+		if (root.isEmpty() && root instanceof Node) {
 			root = root.children.get(0);
 		}
+	}
+
+	public Iterator<E> iterator() {
+		return root.iterator();
 	}
 
 	@Override
 	public String toString() {
 		return root.toString();
 	}
+
 }

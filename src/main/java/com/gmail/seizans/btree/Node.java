@@ -1,10 +1,14 @@
 package com.gmail.seizans.btree;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 final class Node<E extends Comparable<E>> extends AbsNode<E> {
 
 	Node(int deg) {
+		if (deg < 2) {
+			throw new IllegalArgumentException("Degree must be greater than or equal to 2.");
+		}
 		this.deg = deg;
 		this.keys = new ArrayList<E>(deg * 2 - 1);
 		this.children = new ArrayList<AbsNode<E>>(deg * 2);
@@ -100,10 +104,11 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		} else if (index == children.size() - 1) {
 			if (children.get(index - 1).size() != deg - 1) {
 				moveToRight(index - 1);
+				children.get(index).delete(e);
 			} else {
 				mergeChild(index - 1);
+				children.get(index - 1).delete(e);
 			}
-			children.get(index - 1).delete(e);
 		} else {
 			if (children.get(index + 1).size() != deg - 1) {
 				moveToLeft(index + 1);
@@ -139,13 +144,6 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 	void pushLeft(E key, AbsNode<E> left) {
 		keys.add(0, key);
 		children.add(0, left);
-//		left.keys.add(key);
-//		left.keys.addAll(keys);
-//		keys.clear();
-//		keys.addAll(left.keys);
-//		left.children.addAll(children);
-//		children.clear();
-//		children.addAll(left.children);
 	}
 
 	private void moveToRight(int index) {
@@ -219,6 +217,15 @@ final class Node<E extends Comparable<E>> extends AbsNode<E> {
 		root.children.add(lhs);
 		root.children.add(rhs);
 		return root;
+	}
+
+	@Override
+	void pushForIterator(Stack<Object> stack) {
+		for (int i = 0; i < keys.size(); i++) {
+			stack.push(children.get(children.size() - 1 - i));
+			stack.push(keys.get(keys.size() - 1 - i));
+		}
+		stack.push(children.get(0));
 	}
 
 	@Override
