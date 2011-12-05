@@ -5,7 +5,9 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
@@ -51,6 +53,13 @@ breadthFirstIterator()#remove()
 public class BinaryTreeTest {
 
 	private final String VAL_PRE = "ValuePrefix_";
+
+	@Test
+	public void test1() {
+		StringBuilder[] src = { new StringBuilder("1"), new StringBuilder("2")};
+		List<StringBuilder> dest = Arrays.asList(src);
+		dest.add(new StringBuilder("3"));
+	}
 
 	@Test
 	public void constructorTest() {
