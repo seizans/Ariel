@@ -9,12 +9,14 @@ import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
-public class BtreeTest {
+import com.gmail.seizans.btreepast.BtreePast;
+
+public class BtreePastTest {
 
 	@Test
 	public void deleteTest() {
 		final int N = 50;
-		Btree<Integer> btree = new Btree<Integer>(3);
+		BtreePast<Integer> btree = new BtreePast<Integer>(3);
 		for (int i = 0; i < N; i++) {
 			btree.insert(i);
 		}
@@ -28,7 +30,7 @@ public class BtreeTest {
 
 	@Test
 	public void insertTest3() {
-		Btree<Integer> btree = new Btree<Integer>(2);
+		BtreePast<Integer> btree = new BtreePast<Integer>(2);
 		btree.insert(4);
 		btree.insert(2);
 		btree.insert(10);
@@ -41,7 +43,7 @@ public class BtreeTest {
 
 	@Test
 	public void insertTest2() {
-		Btree<Integer> btree = new Btree<Integer>(2);
+		BtreePast<Integer> btree = new BtreePast<Integer>(2);
 		for (int i = 100; i > 50; i--) {
 			Integer in = Integer.valueOf(i);
 			btree.insert(in);
@@ -54,7 +56,7 @@ public class BtreeTest {
 
 	@Test
 	public void zeroTest() {
-		Btree<Integer> btree = new Btree<Integer>(4);
+		BtreePast<Integer> btree = new BtreePast<Integer>(4);
 		for (Integer i: btree) {
 			System.out.println(i);
 		}
@@ -75,7 +77,7 @@ public class BtreeTest {
 	@Test
 	public void insertTest() {
 		final int N = 50;
-		Btree<Integer> btree = new Btree<Integer>(2);
+		BtreePast<Integer> btree = new BtreePast<Integer>(2);
 		for (int i = 0; i < N; i++) {
 			btree.insert(i);
 		}

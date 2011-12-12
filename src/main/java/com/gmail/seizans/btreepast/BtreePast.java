@@ -1,4 +1,4 @@
-package com.gmail.seizans.btree;
+package com.gmail.seizans.btreepast;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,27 +8,27 @@ import java.util.NoSuchElementException;
 import java.util.Stack;
 
 // TODO collect common function up
-public final class Btree<E extends Comparable<E>> implements Iterable<E> {
+public final class BtreePast<E extends Comparable<E>> implements Iterable<E> {
 	private final int degree;
 	private final List<E> keys;
-	private final List<Btree<E>> children;
+	private final List<BtreePast<E>> children;
 	private boolean isLeaf;
 	private final boolean isRoot;
 
-	public Btree(int degree) {
+	public BtreePast(int degree) {
 		this.degree = degree;
 		this.isLeaf = true;
 		this.isRoot = true;
 		keys = new ArrayList<E>(degree * 2 - 1);
-		children = new ArrayList<Btree<E>>(degree * 2);
+		children = new ArrayList<BtreePast<E>>(degree * 2);
 	}
 
-	private Btree(int degree, boolean isLeaf) {
+	private BtreePast(int degree, boolean isLeaf) {
 		this.degree = degree;
 		this.isLeaf = isLeaf;
 		this.isRoot = false;
 		keys = new ArrayList<E>(degree * 2 - 1);
-		children = new ArrayList<Btree<E>>(degree * 2);
+		children = new ArrayList<BtreePast<E>>(degree * 2);
 	}
 
 //	private Btree(int degree, boolean isLeaf, boolean isRoot) {
@@ -40,7 +40,7 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 //	}
 
 	private void splitChild(int idx) {
-		Btree<E> child = children.get(idx);
+		BtreePast<E> child = children.get(idx);
 		if (! child.isFull()) {
 			return;
 		}
@@ -56,7 +56,7 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 		keys.add(idx, child.keys.get(degree - 1));
 
 		// 右と中の間に右半分への参照を代入する
-		Btree<E> newLhs = new Btree<E>(degree, child.isLeaf);
+		BtreePast<E> newLhs = new BtreePast<E>(degree, child.isLeaf);
 		if (child.isLeaf) {
 			for (int i = 0; i < degree - 1; i++) {
 				newLhs.keys.add(child.keys.get(i));
@@ -69,7 +69,7 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 			newLhs.children.add(child.children.get(degree - 1));
 		}
 		
-		Btree<E> newRhs = new Btree<E>(degree, child.isLeaf);
+		BtreePast<E> newRhs = new BtreePast<E>(degree, child.isLeaf);
 //		for (int i = degree; i < child.keys.size(); i++) {
 		if (child.isLeaf) {
 			for (int i = degree; i < degree * 2 - 1; i++) {
@@ -211,8 +211,8 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 	}
 
 	private void leafRootSplit() {
-		Btree<E> lhs = new Btree<E>(degree, isLeaf);
-		Btree<E> rhs = new Btree<E>(degree, isLeaf);
+		BtreePast<E> lhs = new BtreePast<E>(degree, isLeaf);
+		BtreePast<E> rhs = new BtreePast<E>(degree, isLeaf);
 		for (int i = 0; i < degree - 1; i++) {
 			lhs.keys.add(keys.get(i));
 		}
@@ -229,8 +229,8 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 	}
 
 	private void nodeRootSplit() {
-		Btree<E> lhs = new Btree<E>(degree, isLeaf);
-		Btree<E> rhs = new Btree<E>(degree, isLeaf);
+		BtreePast<E> lhs = new BtreePast<E>(degree, isLeaf);
+		BtreePast<E> rhs = new BtreePast<E>(degree, isLeaf);
 		for (int i = 0; i < degree - 1; i++) {
 			lhs.keys.add(keys.get(i));
 			lhs.children.add(children.get(i));
@@ -312,8 +312,8 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 	
 	// 前提条件：children.get(idx) も children.get(idx + 1) も size == degree - 1
 	private void mergeChild(int idx) {
-		Btree<E> lhs = children.get(idx);
-		Btree<E> rhs = children.get(idx + 1);
+		BtreePast<E> lhs = children.get(idx);
+		BtreePast<E> rhs = children.get(idx + 1);
 		lhs.keys.add(keys.get(idx));
 		keys.remove(idx);
 		for (int i = 0; i < degree - 1; i++) {
@@ -326,8 +326,8 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 
 	// 前提条件：children.get(idx).keys.size() >= degree
 	private void moveKeyToRight(int idx) {
-		Btree<E> lhs = children.get(idx);
-		Btree<E> rhs = children.get(idx + 1);
+		BtreePast<E> lhs = children.get(idx);
+		BtreePast<E> rhs = children.get(idx + 1);
 		rhs.keys.add(keys.get(idx));
 		keys.remove(idx);
 		if (!lhs.isLeaf) {
@@ -339,8 +339,8 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 	}
 
 	private void moveKeyToLeft(int idx) {
-		Btree<E> lhs = children.get(idx - 1);
-		Btree<E> rhs = children.get(idx);
+		BtreePast<E> lhs = children.get(idx - 1);
+		BtreePast<E> rhs = children.get(idx);
 		if (!lhs.isLeaf) {
 			lhs.children.add(rhs.children.get(0));
 			rhs.children.remove(0);
@@ -359,7 +359,7 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 		private final Stack<Object> stack = new Stack<Object>();
 
 		private OrderIterator() {
-			Btree<E> root = Btree.this;
+			BtreePast<E> root = BtreePast.this;
 			if (root.isLeaf) {
 				if (root.keys.size() == 0) {
 					return;
@@ -370,14 +370,14 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 			}
 		}
 
-		private void leafPush(Btree<E> btree) {
+		private void leafPush(BtreePast<E> btree) {
 			ListIterator<E> iter = btree.keys.listIterator(btree.keys.size());
 			while (iter.hasPrevious()) {
 				stack.push(iter.previous());
 			}
 		}
 
-		private void nodePush(Btree<E> btree) {
+		private void nodePush(BtreePast<E> btree) {
 			for (int i = btree.keys.size() - 1; i >= 0; i--) {
 				stack.push(btree.children.get(i + 1));
 				stack.push(btree.keys.get(i));
@@ -397,8 +397,8 @@ public final class Btree<E extends Comparable<E>> implements Iterable<E> {
 			if (obj instanceof Comparable<?>) {
 				E key = (E)obj;
 				return key;
-			} else if (obj instanceof Btree<?>) {
-				Btree<E> child = (Btree<E>) obj;
+			} else if (obj instanceof BtreePast<?>) {
+				BtreePast<E> child = (BtreePast<E>) obj;
 				if (child.isLeaf) {
 					leafPush(child);
 				} else {
