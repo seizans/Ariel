@@ -21,7 +21,13 @@ public final class Dijkstra {
 			Vertex vertex = pq.poll();
 			vertex.setColor(Color.BLACK);
 			for (Vertex v: getAdj(vertex)) {
-				vertex.relax(v);
+				if (v.getColor() == Color.WHITE) {
+					v.relax(vertex);
+					pq.add(v);
+					v.setColor(Color.GREY);
+				} else {
+					v.relax(vertex);
+				}
 			}
 		}
 	}
@@ -59,7 +65,7 @@ public final class Dijkstra {
 
 	private static class VertexPqComparator implements Comparator<Vertex> {
 		public int compare(Vertex o1, Vertex o2) {
-			return o2.getDist() - o1.getDist();
+			return o1.getDist() - o2.getDist();
 		}
 	}
 }

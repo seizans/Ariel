@@ -97,6 +97,7 @@ final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 		return new Tuple2<E, AbsNode<E>>(key, null);
 	}
 
+	@Override
 	AbsNode<E> rootSplit() {
 		Node<E> root = new Node<E>(deg);
 		Leaf<E> lhs = new Leaf<E>(deg);

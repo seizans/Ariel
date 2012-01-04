@@ -71,7 +71,6 @@ public final class Vertex {
 			prev = vertex;
 			dist = throughVertex;
 		}
-		setColor(Color.GREY);
 	}
 
 	private int distTo(Vertex vertex) {

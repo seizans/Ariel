@@ -27,10 +27,10 @@ public class DijkstraTest {
 		Dijkstra dijkstra = new Dijkstra(vertexes);
 		dijkstra.dijkstra("s");
 		assertThat(dijkstra.getVertex("s").getDist(), is(0));
+		assertThat(dijkstra.getVertex("y").getDist(), is(5));
 		assertThat(dijkstra.getVertex("t").getDist(), is(8));
 		assertThat(dijkstra.getVertex("x").getDist(), is(9));
-		assertThat(dijkstra.getVertex("y").getDist(), is(5));
-		assertThat(dijkstra.getVertex("z").getDist(), is(7));
+		assertThat(dijkstra.getVertex("z").getDist(), is(13));
 		// TODO ROUTE LIST の Assert
 	}
 
