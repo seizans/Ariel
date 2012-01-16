@@ -36,6 +36,14 @@ public final class BtreeSet<E extends Comparable<E>> implements Iterable<E> {
 		}
 	}
 
+	public E getMin() {
+		return root.minKey();
+	}
+
+	public E getMax() {
+		return root.maxKey();
+	}
+
 	public Iterator<E> iterator() {
 		return root.iterator();
 	}

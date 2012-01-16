@@ -6,8 +6,8 @@ import java.util.Stack;
 final class Leaf<E extends Comparable<E>> extends AbsNode<E> {
 
 	Leaf(int deg) {
-		if (deg < 2) {
-			throw new IllegalArgumentException("Degree must be greater than or equal to 2.");
+		if (deg < 1) {
+			throw new IllegalArgumentException("Degree must be greater than or equal to 1.");
 		}
 		this.deg = deg;
 		this.keys = new ArrayList<E>(deg * 2 - 1);
